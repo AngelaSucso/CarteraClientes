@@ -1,5 +1,7 @@
 package com.example.asus.carteraclientes;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
@@ -7,6 +9,7 @@ import com.example.asus.carteraclientes.BaseDatos.DatosOpenHelper;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -17,6 +20,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.example.asus.carteraclientes.BaseDatos.FeedReaderContract;
+import com.example.asus.carteraclientes.BaseDatos.FeedReaderContract.FeedEntry;
 
 public class ActNuevoCliente extends AppCompatActivity {
     private EditText edtNombre;
@@ -57,17 +63,16 @@ public class ActNuevoCliente extends AppCompatActivity {
                     try {
                         datosOpenHelper = new DatosOpenHelper( this);
                         conexion = datosOpenHelper.getWritableDatabase();
-                        StringBuilder sql = new StringBuilder();
-                        sql.append("INSERT INTO CLIENTE (NOMBRE, DIRECCION, EMAIL, TELEFONO) VALUES ('");
-                        sql.append(edtNombre.getText().toString().trim() + "', '");
-                        sql.append(edtDireccion.getText().toString().trim() + "', '");
-                        sql.append(edtEmail.getText().toString().trim() + "', '");
-                        sql.append(edtTelefono.getText().toString().trim() + "')");
+                        ContentValues values = new ContentValues();
+                        values.put(FeedEntry.COLUMN_NAME, edtNombre.getText().toString().trim());
+                        values.put(FeedEntry.COLUMN_DIREC, edtDireccion.getText().toString().trim());
+                        values.put(FeedEntry.COLUMN_EMAIL, edtEmail.getText().toString().trim());
+                        values.put(FeedEntry.COLUMN_NUMBER, edtTelefono.getText().toString().trim());
+                        finish();
 
-                        conexion.execSQL(sql.toString());
+                        conexion.insert(FeedEntry.TABLE_NAME, null, values);
                         conexion.close();
 
-                        finish();
                     }   catch (Exception ex){
                         AlertDialog.Builder dlg = new AlertDialog.Builder( this);
                         dlg.setTitle("Aviso");
@@ -82,6 +87,7 @@ public class ActNuevoCliente extends AppCompatActivity {
                     dlg.setMessage("Existen campos vacios");
                     dlg.setNeutralButton( "OK", null);
                     dlg.show();
+                    break;
                 }
                 break;
 
